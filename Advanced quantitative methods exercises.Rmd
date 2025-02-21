@@ -1,0 +1,1760 @@
+---
+title: "Advanced quantitative methods exercises"
+author: "Char Hilgers"
+date: "Fall semester 2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Session 1: Admin and Starting with R
+
+## Exercise R1
+Compute using R: 
+$$
+\frac{1335}{4}y^6 + x^2(11x^2y^2 - y^6 - 121y^4 - 2) + \frac{11}{2}y^8
+$$
+
+```{r exerciseR1}
+x <- 77617
+y <- 33096
+
+(1335/4)*y^6 + x^2*(11*x^2*y^2 - y^6 - 121*y^4 - 2) + (11/2)*y^8
+```
+## Exercise R2
+Read the data austriapop.txt found in the Moodle course in R.
+
+```{r exerciseR2}
+# setwd("C:/Users/chilgers/OneDrive - DIW Berlin/Documents/02 Projects/BGSS Coursework/Advanced Quantitative Methods")
+
+df <- read.table("./Lecture 1/austriapop.txt", header=TRUE, sep=",")
+
+head(df)
+```
+
+## Exercise R3
+### Exercise R3.a
+Create the following data frame Dat (tricky and concisely).
+
+```{r exerciseR3a}
+Dat <- read.table("./Lecture 1/Dat.txt", header=TRUE, sep="")
+
+head(Dat)
+```
+### Exercise R3.b
+Create out of Dat a new data frame Dat2 that only contains the variables ID and drug.
+
+```{r exerciseR3b}
+library(dplyr)
+
+Dat2 <- Dat %>% select(ID, drug)
+
+head(Dat2)
+```
+### Exercise R3.c
+Create out of Dat a new data frame Dat3 that only contains the values of the individuals with an ID that equals to 1 or 3.
+```{r exerciseR3c}
+Dat3 <- Dat %>% filter(ID %in% c(1, 3))
+
+head(Dat3)
+```
+### Exercise R3.d
+Sort the data set Dat descending/ ascending according to time.
+```{r exerciseR3d}
+Dat <- Dat %>% arrange(time)
+
+head(Dat)
+
+Dat <- Dat %>% arrange(-time)
+
+head(Dat)
+```
+
+## Exercise R4
+### Exercise R4.i
+$2 + 3 ∗ ((4 + 5 ∗ (6 + 7 ∗ (8 + 9))))$
+
+```{r exerciseR4i}
+2+3*((4 + 5 * (6 + 7 * (8 + 9))))
+```
+### Exercise R4.ii 
+$1e+07 * 4^3$
+
+```{r exerciseR4ii}
+1e+07 * 4^3
+```
+### Exercise R4.iii 
+$log_e(2)$
+
+```{r exerciseR4iii}
+log(2)
+```
+### Exercise R4.iv
+$log_{10}(2)$
+
+```{r exerciseR4iv}
+log10(2)
+```
+### Exercise R4.v
+$\sqrt{333}$
+
+```{r exerciseR4v}
+sqrt(333)
+```
+
+# Session 2: Starting with R - Part 2
+
+## Exercise R5
+### Exercise R5.1
+Write a function `a.sort()` that returns the $a$th-smallest element of a given vector. The input arguments of the function are
+- vect: the considered vector
+- a: indicates which element should be returned by the function
+  - If a = 1, the smallest element should be returned
+  - If a = length(vect), the biggest element of vect should be returned
+  - If a = 3, the 3rd-smallest element should be returned
+
+The output value of the function is the $a$th-smallest element of vect
+
+```{r exerciseR5_1}
+vect <- c(1, 5, 2)
+
+a.sort <- function(vect, a) {
+  if(length(vect) < a) {
+    stop("a is greater than the length of the vector")
+  }
+  
+  result <- vect[order(vect) == a]
+  return(result)
+}
+
+a.sort(vect, a = 1)
+a.sort(vect, a = 3)
+a.sort(vect, a = 2)
+```
+### Exercise R5.2
+Generate a matrix A that consists of 30 rows and 30 columns. Fill this matrix with random numbers
+which are standard normally distributed
+
+```{r exerciseR5_2}
+A <- matrix(data = rnorm(900, mean = 0, sd = 1), nrow = 30, ncol = 30)
+```
+
+### Exercise R5.3
+Compute the 5th-smallest element of each column of A by using the apply()and the a.sort()
+function in combination.
+
+```{r exerciseR5_3}
+apply(X = A, MARGIN = 2, FUN = a.sort, a = 5)
+```
+
+# Session 3: Starting with R - Part 3
+
+## Exercise R6
+### Exercise R6.1
+Simulate data: Generate a random sample of 1000 observations from a normal distribution with mean $\mu = 50$ and std deviation $\sigma = 10$.
+```{r exerciseR6_1}
+set.seed(1234)
+sample_data <- rnorm(1000, mean = 50, sd = 10)
+```
+
+### Exercise R6.2
+Plot the Data. Create a histogram of the generated data to visualize the distribution. Overlay the theoretical normal curve on top of the histogram for comparison. Use ggplot2 for plotting
+
+```{r exerciseR6_2}
+library(ggplot2)
+
+ggplot(data.frame(sample_data), aes(x = sample_data)) +
+geom_histogram(aes(y = after_stat(density)), bins = 30, fill = "lightblue", color = "black") +
+stat_function(fun = dnorm, args = list(mean = 50, sd = 10),
+color = "red", linetype = "dashed", linewidth = 1) +
+theme_minimal() +
+labs(title = "Histogram of Simulated Normal Distribution", x = "Value", y = "Density")
+```
+### Exercise R6.3
+Descriptive Statistics. Calculate and report the following descriptive statistics of the sample: Mean, standard deviation, minimum and maximum values, as well as median. Use appropriate R functions such as mean(), sd(), min(), max(), median().
+
+```{r exerciseR6_3}
+# Mean
+mean(sample_data)
+
+# Standard deviation
+sd(sample_data)
+
+# Minimum
+min(sample_data)
+
+# Maximum
+max(sample_data)
+
+# Median
+median(sample_data)
+```
+### Exercise R6.4
+Comparison with theoretical values. Compare the sample mean and standard deviation with the theoretical values $\mu = 50$ and $\sigma = 10$. Discuss why the values might not be exactly the same.
+
+The sample mean is 49.73403. This is smaller than the theoretical value of 50. 
+The sample deviation is 9.973377, also smaller than the theoretical value of 10.
+
+These differ from the theoretical values only slightly. 
+
+If I do the sampling again with a different seed, what do I get?
+```{r exerciseR6_4}
+set.seed(5678)
+sample_data2 <- rnorm(1000, mean = 50, sd = 10)
+
+# Mean
+mean(sample_data2)
+
+# Standard deviation
+sd(sample_data2)
+
+```
+The mean and standard deviation of sample_data2, generated with a different seed, are larger than the theoretical values. 
+
+With a larger sample (or repeated samples of 1000), the sample mean and standard deviation values will approach the theoretical values by the Central Limit Theorem.
+
+## Exercise R7
+### Exercise R7.1
+Open the file **anxiety.rds**, which contains variables for anxiety `anxiety`, occupational stress `occstress`, and a dummy for the size of company `smallcompany`
+
+Read the data using `dat <- readRDS(file = ’anxiety.rds’)`
+
+```{r exerciseR7_1}
+dat <- readRDS("./Lecture 3/anxiety.rds")
+
+head(dat)
+
+```
+### Exercise R7.2
+Estimate a linear regression with `anxiety` is the dependent variable and `occstress` and `smallcompany` are the explanatory variables of the model
+
+```{r exerciseR7_2}
+lm_model <- lm(anxiety ~ occstress + smallcompany, data = dat)
+```
+
+### Exercise R7.3
+Interpret coefficients, constant, $R^2$, F-Test.
+
+```{r exerciseR7_3}
+summary(lm_model)
+```
+**Coefficients**
+
+P-values "test whether results touted as evidence for an effect are likely to be observed if the effect is not real." (https://www.nature.com/articles/506131b) For the coefficients `occstress` and `smallcompany`, when they are placed in a linear model relating to `anxiety`, we obtain small p-values of <2e-16. That means: it is highly unlikely that we would observe this data if the effect of `occstress` and `small company` on `anxiety` were not real.
+
+So changes in `anxiety` are highly likely to be associated with changes in `occstress` and `smallcompany`. 
+
+The coefficient for `smallcompany` is negative, meaning that there is negative correlation between `smallcompany` and `anxiety`. In other words: bigger companies are associated with higher anxiety. The value of the coefficient is -1.62782, meaning that there is an average decrease of 1.62782 in `anxiety` associated with a one unit increase in `smallcompany`.
+
+The coefficient of `occstress` is positive, meaning higher levels of occupational stress are associated with higher anxiety. The value of the coefficient is 0.65120, so that there is an average increase of 0.65120 in `anxiety` associated with a one unit increase in `occstress`
+
+**R-squared**
+
+$R^2$ helps us assess model fit. Multiple $R^2$ is the proportion of variance in the outcome variable `anxiety` that can be explained by predictors. 0.4714 is not thaaaaaaat great of an $R^2$ value. Adjusted $R^2$ adjusts for the number of predictors in the model. 
+
+**F-statistic**
+
+The F-statistic is most often used to compare different models to find the best model. It compares the current model to a model with no predictor variables at all. It has a small p-value of <2.2e-16, from which we can conclude that this model fits data better than a model with intercept only.
+
+### Exercise R7.4
+Use some checks of the assumptions of linear regression.
+```{r exerciseR7_4}
+par(mfrow = c(2, 2))
+plot(lm_model, which = 1:4)
+```
+
+- Residuals vs. Fitted plot: we see a blob around zero, indicating that the variance of the error term is not varying with fitted values. Good!
+- Q-Q Residual plot: the standardized residuals vs. theoretical quantiles are laying on the diagonal. Good!
+- Scale-Location plot: evaluates the constant variance assumption with different scale and plots outliers. Blob is good!
+- Cook's distance: shows us outliers that may have an outsized/heavy influence on the model
+
+# Session 4: Multilevel models
+
+## Exercise A: Load data
+
+```{r exercise_session4_A}
+# Load library
+
+# oo <- options(repos = "https://cran.r-project.org/")
+# install.packages("Matrix", type="binary")
+# install.packages("lme4", type="binary")
+# options(oo)
+
+library(lme4)
+
+# Set working directory
+setwd("C:/Users/chilgers/OneDrive - DIW Berlin/Documents/02 Projects/BGSS Coursework/Advanced Quantitative Methods")
+
+# Load data
+DAT <- read.csv2("./Lecture 4/ex1.txt")
+```
+## Exercise B
+Estimate random intercept models (RIM)
+
+### Exercise B.1
+Empty model, only random intercept on school level
+
+#### Exercise B.1.1
+Estimate model
+```{r exercise_session4_B1}
+
+# Estimate model
+mod <- lmer(langPOST ~ (1|schoolnr), data = DAT, REML = TRUE)
+```
+
+#### Exercise B.1.2
+Derive ICC from the output. Assess whether it is really necessary to use a multi-level model for analyzing this data set
+```{r exercise_session4_2}
+summary(mod)
+
+# tau^2 = var(U_0j)
+tau_sq <- 18.78
+
+# sigma^2 = var(R_ij)
+sigma_sq <- 63.20
+
+# ICC = tau^2/(tau^2 + sigma^2)
+ICC <- tau_sq / (tau_sq + sigma_sq)
+
+ICC
+
+```
+
+According to the lecture slides, the ICC is, "often between 0.05 and 0.25 in social science research, where the groups represent some kind of social grouping." (Session 4, Slide 14) Here the value of the ICC is 0.23. This indicates a grouping that *does* necessitate a multi-level data set.
+
+#### Exercise B.1.3
+What is the estimated mean of the total population of individual values $Y_{ij}$ and the corresponding standard deviation?
+
+From the summary above:
+- Estimated mean is the fixed effect intercept estimate 40.9224
+- Standard error is 0.3325
+
+#### Exercise B.1.4
+What is the estimated mean of the population of class means $\beta_{0j}$ and the corresponding standard deviation?
+
+It is estimated the same across groups, so we have:
+- Estimated mean is the fixed effect intercept estimate 40.9224
+- Standard error is 0.3325
+
+### Exercise B.2 Linear model without any multi-level structure
+1) Add the covariate for IQ into the model
+2) Estimate an OLS regression (using the R function lm) and a multi-level model (RIM), and compare both. Discuss!
+
+```{r exercise_session4_B2}
+mod2 <- lm(langPOST ~ IQ_verb, data=DAT)
+summary(mod2)
+```
+
+### Exercise B.3 RIM with one covariate
+
+```{r exercise_session4_B3}
+mod3 <- lmer(langPOST ~ IQ_verb + (1|schoolnr), data=DAT)
+summary(mod3)
+```
+
+### Exercise B.4 Compare model output
+```{r exercise_session4_B4}
+library(stargazer)
+stargazer(mod, mod2, mod3, type="text", out="ml.htm")
+
+```
+
+- In the linear model without any multi-level structure (mod2), we have very small standard errors, p-values. This can also happen if we do not model correctly. OLS has a misleading standard error for the intercept. 
+- In the random intercept model with one covariate (mod3), we see that the estimates for intercept and IQ_verb are nearly the same as in mod2. When it comes to IQ_verb, there is not a lot of influence of the school. The variance attributed to random effect of the school is 10.22, this is quite a lot
+
+### Exercise B.5
+R squared: $R^2 = 1 - (\textrm{unexplained variance} / \textrm{total variance})$
+
+```{r exercise_session4_B5}
+library(mitml)
+
+multilevelR2(mod3, print = c("RB1", "RB2", "SB", "MVP"))
+
+```
+
+### Exercise B.6
+#### Exercise B.6.1
+Add a group level effect for testing IQ using the R commands: ...
+
+```{r exercise_session4_B6_1}
+groupM <- aggregate(DAT$IQ_verb, by=list(DAT$schoolnr), FUN=mean)
+
+colnames(groupM) <- c("schoolnr", "IQ_mean")
+
+DAT <- merge(DAT, groupM, by="schoolnr", all.x = TRUE)
+
+```
+
+#### Exercise B.6.2
+Compare the random intercept model with and without this group level variable, with a special focus on the level-2 variance. Explain.
+
+```{r exercise_session4_B6_2}
+
+mod4 <- lmer(langPOST ~ IQ_verb + IQ_mean + (1|schoolnr), data=DAT)
+summary(mod4)
+summary(mod3)
+
+stargazer(mod3, mod4, type="text", out="ml.htm")
+```
+The estimated fixed effect of `IQ_mean` is 1.27501. This is quite low, but when we include `IQ_mean` in the model, it reduces the random effect on the variance of group for school from 10.22 to 9.119. This likely means that part of the variance attributed to school group in mod3 is actually from different mean IQ of the school class, captured by `IQ_mean`. It seems that there is a positive effect on an individual's IQ just from being in a higher-IQ class.
+
+### Exercise B.7
+#### Exercise B.7.1
+Predict the school- level random effects (Empirical Bayes, for all N=211 schools), using the R command ranef(model). 
+
+```{r exercise_session4_7_1}
+# For each of the 211 schools
+be_u <- ranef(mod4)$schoolnr[[1]]
+
+# Estimate a linear model to plot the line on top of the EB school-level random effects estimates
+mlm <- lm(sort(be_u) ~ c(1:length(be_u)))
+```
+
+#### Exercise B.7.2
+Plot them as in the plot before, using the plot command. (Hint: Sort the EB before.)
+
+```{r exercise_session4_7_2}
+# Plot the values
+plot(1:length(be_u), sort(be_u), pch=20, xlab="schoolNr", ylab=expression('U'['0j']))
+
+# Add the line to the graph
+abline(a=coef(summary(mlm))[1,1], b=coef(summary(mlm))[2,1]) # then use intercept and slope of that model to plot the line
+```
+
+### Exercise B.8
+Plot random effects on school level with confidence intervals
+```{r exercise_session4_B8}
+library(sjmisc)
+library(sjPlot)
+library(glmmTMB)
+plot_model(mod4, type = "re", col="blue", 
+           title="Random Effects on School Level")
+```
+
+## Exercise C: Estimate random slope model (RSM)
+
+### Exercise C.1
+Model with one random slope of IQ. 
+
+#### Exercise C.1.1
+Add a random slope for IQ to your last model.
+For this: Have a look in the help function of lme4 package who this works.
+
+```{r exercise_session4_C1.1}
+mod5 <- lmer(langPOST ~  IQ_mean + IQ_verb +  (IQ_verb|schoolnr), data=DAT)
+summary(mod5)
+```
+
+#### Exercise C.1.2
+Write the regression equation for the estimated model.
+$$
+Y_{ij} = \beta_{0j} + \beta_{1}x_{ij} + \beta_{2j}x_{ij} + R_{ij}
+$$
+$$
+\begin{align*}
+\beta_{0j} &= \gamma_{00} + U_{0j} \textrm{, random intercept for school }j, U_{0j} \sim N(0, \tau_0^2)\\
+\beta_{1} &= \gamma_{10} \textrm{, fixed effect of } \texttt{IQ_mean} \\
+\beta_{2j} &= \gamma_{20} + U_{2j} \textrm{, random effect of } \texttt{IQ_verb} \textrm{ in school }j, U_{2j} \sim N(0, \tau_2^2)
+\end{align*}
+$$
+
+$$
+Y_{ij} = \gamma_{00} + \gamma_{10}x_{ij} + \gamma_{20}x_{ij} + U_{0j} + U_{2j}x_{ij} + R_{ij}
+$$
+
+$$
+Y_{ij} = 41.03652 + 1.03026x_{ij} + 2.46418x_{ij} + U_{0j} + U_{2j}x_{ij} + R_{ij}
+$$
+
+$$
+\begin{align*}
+\gamma_{00} &= 41.03652\\
+\gamma_{10} &= 1.03026\\
+\gamma_{20} &= 2.46418\\
+U_{0j} &\sim N(0, 9.3268) \\
+U_{2j} &\sim N(0, 0.1896)
+\end{align*}
+$$
+
+#### Exercise C.1.3
+What is the average of the slope for IQ, and what is the related standard deviation?
+
+The average (fixed effect) of the slope for `IQ_verb` is 2.46418 and its related standard deviation (of the random effect) is 0.4354. 
+
+###  Exercise C.2
+Plot the regression lines for all N=211 schools.(One option for plotting: use the ‘predict’ function for each school separately and plot the predicted Y s along X.)
+
+```{r exercise_session4_C2.1}
+schNr <- unique(DAT$schoolnr)
+plot(0, xlim= range(DAT$IQ_verb), ylim=range(DAT$langPOST), col="white", xlab="IQ", ylab="langScore")
+for(i in 1: length(schNr)) {
+  pr <- predict(mod5, newdata=DAT[DAT$schoolnr %in% schNr[i],], type="response")
+  iq <- DAT[DAT$schoolnr %in% schNr[i],"IQ_verb"]
+  res <- cbind(iq,pr)
+  lines(res[,1], res[,2])
+}
+abline(v=0)
+```
+
+**What do you find concerning the variance of Y (language test score) related to X (IQ)?**
+
+These plotted slopes are quite different from each other so it seems to be worthwhile to use the random slopes model! The variance is higher for low $X$ than for high $X$. This indicates heteroscedasticity.
+
+### Exercise C.3
+
+Add a cross-level interaction effect for mean(IQ) and IQ to your last model. (Hint: Mind that this is still an interaction effect, commonly quantified by the product of two variables.)
+
+```{r exercise_session4_C3.1}
+mod6 <- lmer(langPOST ~  IQ_mean + IQ_verb + IQ_mean*IQ_verb + (IQ_verb|schoolnr), data=DAT)
+summary(mod6)
+```
+We are now adding class mean IQ as a predictor of personal IQ slopes. The fixed effect for the effect of class mean IQ `IQ_mean` on `IQ_verb` is the estimated cross-level interaction effect for `IQ_mean` and `IQ_verb`. It is -0.16753. The effect of `IQ_verb` on language test scores is lower when the `IQ_mean` higher, by -0.16753 points on average.  
+
+### Exercise C.4
+
+#### Exercise C.4.1
+Build a multilevel model with
+- a global intercept
+- two explanatory variables IQ and SES on level-1
+- two explanatory variables avg(IQ) and avg(SES) on level-2 (with · denotes the group mean)
+- an interaction effect for IQ and SES on level-1
+- an interaction effect for avg(IQ) and avg(SES) on level-2
+- a cross-level interaction effect for IQ and avg(IQ)
+- a cross-level interaction effect for SES and avg(SES)
+- a cross-level interaction effect for IQ and avg(SES)
+- a cross-level interaction effect for SES and avg(IQ)
+- a random intercept on school level and a random slope for IQ
+
+```{r exercise_session4_C4.1}
+# build group mean of SES and add to data set
+groupM <- aggregate(DAT$ses, by=list(DAT$schoolnr), FUN=mean)
+
+colnames(groupM) <- c("schoolnr", "SES_mean")
+
+DAT <- merge(DAT, groupM, by="schoolnr", all.x = TRUE)
+
+# build and estimate model
+mod7 <- lmer(langPOST ~  IQ_verb + ses + 
+                         IQ_mean + SES_mean +  
+                         IQ_verb*ses +
+                         IQ_mean*SES_mean +
+                         IQ_mean*IQ_verb + 
+                         SES_mean*ses + 
+                         IQ_mean*ses + 
+                         SES_mean*IQ_verb +                          
+                      + (IQ_verb|schoolnr), 
+             data = DAT,
+             REML = TRUE)
+
+summary(mod7)
+```
+
+#### Exercise C.4.2
+Describe and discuss what you find. I will round the effects to three decimal points so this description doesn't get too digit-heavy
+
+- The grand mean $\gamma_{00}$ = 41.515 is fixed effect for the intercept, controlling for `IQ_verb, IQ_mean, ses, SES_mean` and all interactions between them. 41.515 is the mean language test score, controlling for all the other variables in this model
+- The random effect of classroom `schoolnr` has an associated variance of 8.926. The classroom varies around the intercept with variance of 8.926. This is quite a strong effect
+- Individual students vary around the classroom mean language test by the residual value, 38.015
+- The fixed effect of intelligence score `IQ_verb` on language test score is 2.217. This means that if intelligence score increases by one standard deviation, the data set shows an associated increase in the language test score of 2.217. and its associated variance of the random effect is 0.175, the classroom variance around the slope of the grand mean
+- The fixed effect of socio-economic staus `ses` on language test score is 0.175. There is no random effect estimated for socio-economic status
+- The fixed effect of `IQ_mean`, the mean intelligence score in the classroom, is 0.787
+- The fixed effect of `SES_mean`, the mean socio-economic status in the classroom, is -0.085. This negative number means higher average socio-economic status in the classroom has a slight negative effect on the mean language test score. However this effect is quite small, and it's also smaller than the fixed effect of socio-economic status of the individual, which is positive
+- The interaction fixed effect between language score `IQ_verb` and socio-economic status of the individual `ses` is -0.015. This is a small negative effect on the language test score
+- The interaction fixed effect between mean classroom intelligence score `IQ_mean` and mean classroom socio-economic status `SES_mean` is -0.123. This is also a small negative effect on the language test score
+- The interaction fixed effect between individual intelligence score `IQ_verb` and classroom intelligence test score `IQ_mean` is -0.053. This is again a small negative effect on the language test score
+- The interaction fixed effect between socio-economic status `ses` and classroom socio-economic status `SES_mean` is 0.001. This is a very small effect on the language test score
+- The interaction fixed effect between socio-economic status `ses` and classroom intelligence test score `IQ_mean` is 0.011. This is a small positive effect on the language test score
+- The interaction fixed effect between individual intelligence test score `IQ_verb` and classroom socio-economic status `SES_mean` is 0.001. This is a very very small positive effect on the language test score
+
+Remark: I referred to the textbook Introduction to Multilevel Modelling when completing this exercise https://www.learn-mlms.com/06-module-6.html#data-demonstration-4 
+
+We already saw in Exercise C2 when plotting slopes for classroom that the slopes are quite different from each other. It's worthwhile to include a random slope per classroom. We also have a random intercept term for the classroom 
+
+```{r}
+Matrix::bdiag(VarCorr(mod7))
+``` 
+- The intercept variance is 8.926
+- The slope variance term is 0.175
+- The random effect covariance is -0.956. This is negative, which means that for a higher intercept value, the slope is lower. The interpretation here is that the relationship between intelligence test score and language test score decreases as the mean language test score increases
+
+#### Exercise C.4.3
+Reduce the model. Based on a t-test: Which explanatory variables should stay in the model?
+
+```{r exercise_session4_C4.3}
+library(lmerTest)
+
+# Rerun model 7 with lmerTest loaded
+mod7 <- lmer(langPOST ~  IQ_verb + ses + 
+                         IQ_mean + SES_mean +  
+                         IQ_verb*ses +
+                         IQ_mean*SES_mean +
+                         IQ_mean*IQ_verb + 
+                         SES_mean*ses + 
+                         IQ_mean*ses + 
+                         SES_mean*IQ_verb +                          
+                      + (IQ_verb|schoolnr), 
+             data = DAT,
+             REML = TRUE)
+
+summary(mod7)
+```
+
+Based on the t-test taking Pr(>|t|) < 0.05 as a threshold, the explanatory variables which should stay in the model are:
+- `IQ_verb`
+- `ses`
+- `IQ_mean`
+
+According to the t-test, we can drop `SES_mean` from the model.
+
+#### Exercise C.4.4
+Based on a t-test: Which interaction effects should stay in the model?
+
+Based on the t-test taking Pr(>|t|) < 0.05 as a threshold, the interaction effects which should stay in the model are:
+- `IQ_verb:ses`
+- `IQ_mean:SES_mean`
+
+According to the t-test, we can drop `IQ_verb:IQ_mean`, `ses:SES_mean`, `ses:IQ_mean`, and `IQ_verb:SES_mean` from the model.
+
+#### Exercise C.4.5
+Reduce your model according to your findings. Note: since we are keeping the interaction of `IQ_mean` with `SES_mean`, the explanatory variable for `SES_mean` (by itself) will remain in the model unless we explicitly remove it. I will keep it in.
+
+```{r exercise_session4_C4.5}
+# Rerun model 7 with lmerTest loaded
+mod8 <- lmer(langPOST ~  IQ_verb + ses + 
+               IQ_mean +
+               IQ_verb*ses +
+               IQ_mean*SES_mean +
+               (IQ_verb|schoolnr), 
+             data=DAT,
+             REML = TRUE)
+
+summary(mod8)
+```
+
+### Exercise C.5
+Data as before. Which model gives the better model fit? Test it!
+
+Last model (reduced, only significant & meaningful explanatory variables) without random effects.
+```{r exercise_C5_1}
+mod9a <- lm(langPOST ~  IQ_verb + ses + 
+               IQ_mean + SES_mean +
+               IQ_verb*ses +
+               IQ_mean*SES_mean, 
+             data = DAT)
+
+summary(mod9a)
+```
+
+Last model (reduced, only significant & meaningful explanatory variables) with only a random intercept on school level.
+```{r exercise_C5_2}
+mod9b <- lmer(langPOST ~  IQ_verb + ses + 
+               IQ_mean + SES_mean +
+               IQ_verb*ses +
+               IQ_mean*SES_mean +
+                (1 | schoolnr), 
+             data = DAT,
+             REML = TRUE)
+
+summary(mod9b)
+```
+
+Last model (reduced, only significant & meaningful explanatory variables) with a random intercept on school level and a random slope for IQ.
+```{r exercise_C5_3}
+mod9c <- lmer(langPOST ~  IQ_verb + ses + 
+               IQ_mean + SES_mean + 
+               IQ_verb*ses +
+               IQ_mean*SES_mean +
+                (IQ_verb | schoolnr), 
+             data = DAT,
+             REML = TRUE)
+
+summary(mod9c)
+```
+
+```{r exercise_C5_4}
+loglik_mod9a <- logLik(mod9a)
+loglik_mod9b <- logLik(mod9b)
+
+# LR-Test
+lrt <- -2 * (loglik_mod9a - loglik_mod9b)
+p_value <- pchisq(lrt, df=1, lower.tail = FALSE)
+cat("LRT:", lrt, "p-value:" , p_value)
+```
+The small p-value of 2.168337e-73 indicates that mod9b with a random intercept on school level is significantly better at fitting the data than the model without any random effects in mod9a.
+
+Let's test mod9b against mod9c.
+
+```{r exercise_C5_5}
+loglik_mod9c <- logLik(mod9c)
+
+# LR-Test
+lrt <- -2 * (loglik_mod9b - loglik_mod9c)
+p_value <- pchisq(lrt, df=1, lower.tail = FALSE)
+cat("LRT:", lrt, "p-value:" , p_value)
+```
+Here, the tiny p-value of 8.373206e-07 indicates that mod9c with a random intercept on school level and a random slope for IQ is significantly better at fitting the data than the model without the random slope for IQ in mod9b.
+
+The model that gives the best fit according to the likelihood ratio tests is mod9c with  a random intercept on school level and a random slope for IQ. 
+
+#### Exercise __
+We have models and related variance estimates. 
+
+- Model A (Null model), $\phi$: $Y_{ij} = \beta_0 + U_{0j} + E_{ij}$ has $\hat\sigma^2 = 8.694$ and $\hat\tau_0^2 = 2.271$
+- Model D (Substantial model), $\omega$: $Y_{ij} = \beta_0 + \beta_1(X_{ij} - \bar{X}_{\dot{} j}) + \beta_2\bar{X}_{\dot{} j} + U_{0j} + E_{ij}$ has $\hat\sigma^2 = 6.973$ and $\hat\tau_0^2 = 0.991$
+
+Compute:
+
+$R^2$
+
+We have a two-level RIM, so we'll define $R^2$ as follows:
+
+$R^2 = 1- \frac{\hat\sigma^2(\omega) + \hat\tau_0^2(\omega)}{\hat\sigma^2(\phi) + \hat\tau_0^2(\phi)}$
+
+
+```{r}
+# Substantial model
+sigma_omega <- 6.973
+tau_omega <- 0.991
+
+# Null model 
+sigma_phi <- 8.694
+tau_phi <- 2.271
+
+1 - (sigma_omega + tau_omega) / (sigma_phi + tau_phi)
+```
+
+$R^2_{L1}$
+
+$R^2_{L1} = 1- \frac{\hat\tau_0^2(\omega)}{\hat\tau_0^2(\phi)}$
+
+```{r}
+1 - (tau_omega/tau_phi)
+```
+
+$R^2_{L2}$
+
+$R^2 = 1- \frac{\hat\sigma^2(\omega)}{\hat\sigma^2(\phi)}$
+
+```{r}
+1 - (sigma_omega/sigma_phi)
+```
+
+## Exercise D: Heteroscedasticity
+
+We have a 2-level model with IQ, SES, gender, mean IQ and mean SES as explanatory variables, with an interaction effect between IQ and SES, and a random intercept for the school level and random slope for IQ.
+
+### Exercise D.1.1 Level-1 Residual analysis
+
+Estimate the related within model and extract the residuals. Study the residuals in comparison with the related IQ value, by forming mean residuals in IQ categories and by plotting. Add to each IQ category formed a measure of uncertainty, eg. twice the st.dev. of the estimated mean residual.
+
+What do you see? What do you conclude?
+
+```{r session4_exerciseD_1}
+DAT_w <- DAT
+DAT_w$IQ_verb <- DAT_w$IQ_verb - mean(DAT_w$IQ_verb)
+DAT_w$langPOST <- DAT_w$langPOST - mean(DAT_w$langPOST)
+
+DAT_w$ses <- DAT_w$ses - mean(DAT_w$ses)  
+
+res_w <- lm(langPOST ~ IQ_verb + ses + sex + IQ_verb*ses, data=DAT_w)$residuals
+
+range(round(DAT_w$IQ_verb))
+
+RES <- NULL
+
+for(iq in seq(from = -5, to = 5, by = 0.5)){
+  res_cat <- res_w[DAT_w$IQ_verb >= iq & DAT_w$IQ_verb <= (iq + 1)]
+  RES <- rbind(RES, c(iq, mean(res_cat), 2*sqrt(var(res_cat)/length(res_cat))))
+}
+
+plot(RES[ ,1], RES[ ,2], 
+     pch = 20, 
+     xlab = "IQ", 
+     ylab = "mean residual (IQ categ.)",
+     ylim = c(-5,3))
+
+for(i in 1:nrow(RES)){
+  lines(rep(RES[i, 1], 2), c(RES[i, 2] - RES[i, 3], RES[i, 2]+ RES[i, 3]))
+}
+```
+
+We can see the curvilinear effect of `IQ_verb` in the mean level-1 OLS residuals, which indicates heteroscedasticity. There is something in the residuals related to `langPOST`, the variable we are trying to explain, and this should be addressed in the model (which makes sense because we've already shown that it's a good idea to include the random effects like in model `mod8`). 
+
+#### Exercise D.1.2
+Check normality of residuals using a normal probability plot of standardized level-1 OLS residuals. For standardizing, divide residuals by their standard deviation (function `sd` in R). Use the R function `qqnorm` and `qqline` for that task.
+
+What do you conclude?
+
+```{r exercise_D.1.2}
+res_std_w <- res_w/sd(res_w)
+qqnorm(res_std_w)
+qqline(res_std_w)
+```
+On the Q-Q plot we can see that the residuals are falling off the line at the extremes. We suspect that the residuals are not normally distributed.
+
+#### Exercise D.2 Level-2 Residual Analysis
+We have the following 2-level model:
+- `IQ`, `IQsq_min`, `IQsq_plu`, `ses`, gender, mean IQ, mean SES as explanatory variables, with an interaction effect between IQ and SES, and between mean IQ and mean SES, with a random intercept for the school level and random slope for IQ. Conduct level-2 residual analysis for that model
+
+Estimate the related within model and extract the level-2 residuals.
+```{r session4_exerciseD.2.1}
+DAT$IQsq_min <- ifelse(DAT$IQ_verb<0, DAT$IQ_verb^2, 0)
+
+DAT$IQsq_pl <- ifelse(DAT$IQ_verb<0, 0, DAT$IQ_verb^2)
+
+# Note for Sabine: I think that this model in your RMarkdown is missing gender, which is indicated on the slides
+mod10 <- lmer(langPOST ~  IQ_verb + IQsq_min + IQsq_pl + ses + sex +
+                IQ_mean + SES_mean +  
+                IQ_verb*ses +
+                IQ_mean*SES_mean +
+                (IQ_verb|schoolnr), data=DAT)
+
+summary(mod10)
+```
+
+Study the level-2 residuals in comparison to the related group mean of IQ, by plotting. 
+
+Empirical Bayes estimates of the level-2 random effects (used as level-2 residuals). 
+
+Add a smoothed line of the residuals to assess whether the chosen explanatory variables and random effects match the assumptions (key word: linearity).
+
+```{r session4_exerciseD.2.2}
+be_u <- ranef(mod10)$schoolnr[[1]]
+
+RES <- cbind(unique(DAT$schoolnr), be_u, DAT[!duplicated(DAT$schoolnr), "IQ_mean"])
+
+plot(RES[,3], RES[,2], xlab="IQ_mean", ylab="U_0j")
+
+smooth <- smooth.spline(x=RES[,3], y=RES[,2])
+
+points(smooth$x, smooth$y, pch=20)
+```
+
+These have good scatter! That is good news.
+
+Check normality of residuals using a normal probability plot of the standardized level-2 residuals. 
+
+```{r session4_exerciseD.2.3}
+res_std_w <- be_u/sd(be_u)
+
+qqnorm(res_std_w)
+
+qqline(res_std_w)
+```
+
+This plot is an improvement on the previous Q-Q plot. We can conclude that inclusion of the `IQsq_min` and `IQsq_plu` seems like an improvement over the previous model. 
+
+
+# Session 5: Panel Data Analysis
+
+## Exercise A
+Panel data on wages. Load the data
+
+```{r session5_exerciseA}
+library(haven)
+library(dplyr)
+
+# Set working directory
+setwd("C:/Users/chilgers/OneDrive - DIW Berlin/Documents/02 Projects/BGSS Coursework/Advanced Quantitative Methods")
+
+# Load data
+DAT1 <- read_dta("./Lecture 7/data1.dta")
+```
+
+### Exercise A.1
+How many observations do you find in the data set?
+
+```{r session5_exerciseA.1}
+nrow(DAT1)
+
+```
+There are 4165 observations in total, across all individuals and time points.
+
+### Exercise A.2
+How many time points do you find?
+
+```{r session5_exerciseA.2}
+DAT1_units <- DAT1 %>% 
+  select(time) %>% 
+  unique()
+
+nrow(DAT1_units)
+```
+
+There are seven time points.
+
+### Exercise A.3
+How many units do you find in the data set?
+
+```{r session5_exerciseA.3}
+DAT1_units <- DAT1 %>% 
+  select(id) %>% 
+  unique()
+
+nrow(DAT1_units)
+```
+There are 595 unique units in total.
+
+### Exercise A.4
+How many observations for each unit do you find in the data?
+
+```{r session5_exerciseA.4}
+DAT1_sum <- DAT1 %>%
+                  group_by(id) %>%
+                  summarise(N = n_distinct(time))
+DAT1_sum$N
+```
+There are seven observations for each unit. 
+
+## Exercise B Pooled regression
+Replicate the table on slide 23 of session 9 slides. Use for this the R library `plm` and the data set Wages included in the package.
+
+### Exercise B.1
+Load data. Add identifiers for individuals and time. For the OLS estimation (pooled model), use either the `lm` function or the `plm` function of the package `plm` with the arguments `model = "pooling"` and `index = c("id", "time")`.
+
+```{r Session5_ExerciseB.1}
+library(plm)
+
+# DAT <- Wages
+# This was breaking my knit so I save and reload Wages
+# save(Wages, file = "./Wages.Rdata")
+
+load("Wages.Rdata")
+
+DAT <- Wages
+
+DAT$expSq <- DAT$exp^2
+DAT$id <- rep(1:595, each=7)
+DAT$time <- rep(1:7, 595)
+
+mod0 <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black, data=DAT, model="pooling", index = c("id", "time"))
+
+summary(mod0, vcov=vcovHC(mod0, method="arellano"))
+
+```
+
+Estimate a group means model using the plm function with the arguments `model="between"` and `index = c("id","time")` (Function gives correct standard errors, White type.)
+
+```{r Session5_ExerciseB.1.2}
+mod1 <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black, data=DAT, model="between", index = c("id", "time"))
+
+summary(mod1)
+```
+
+### Exercise B.2
+Interpret the results.
+
+```{r }
+library(stargazer)
+stargazer(mod0, mod1, type = "text")
+```
+
+With a simple linear model, we are assuming that $E(y) = X\beta$ and $E(\epsilon) = 0$, $Cov(y) = \sigma^2 I = Cov(\epsilon) = E(\epsilon \epsilon´)$ and that $X$ is exogenous, not random, and has full rank. We can assume an exogenous $X$ if we have an experimental setup (not this case), or $X$ is assumed to be the result of a random experiment, providing $y$. Some of the variables are time-constant and others are not.
+
+We are comparing two methods of modeling $E(\epsilon \epsilon´) = \Sigma$. One allows for autocorrelation within an observational unit, calculating $\Sigma_{AUT}$. The otherallows cross-sectional heteroscedasticity across the $N$ observational units by calculating $\sigma_{i}I_{Ti}$ for each unit $i$. These methods relax the assumption of the linear model that requires $Cov(y) = \sigma^2 I = Cov(\epsilon) = E(\epsilon \epsilon´)$, but does not require calculating $N_T(N_T + 1)/2$ parameters, which would be too many.
+
+In `mod0` we estimate a pooled model, with robust standard errors with the Arellano method. The pooled model allows heteroscedastic errors in $\epsilon_{it}$ and for these to be serially correlated over time. When we pool though we assume that the same coefficients apply across all individuals. 
+
+In `mod1` we estimate a model with group means of clusters in the data (all data points for one individual). In this "between" model, we estimate the model on group averages of the data (the group here is individual over all time points observed), and we disregard information about variability over time in the individual. 
+
+*Note for Sabine: in your Rmd that accompanies the slides there is no variable for `wks` in your calculation of mod0, but this is asked for in the exercise.*
+
+Note: I referred here to https://cran.r-project.org/web/packages/plm/vignettes/A_plmPackage.html
+
+### Exercise B.3
+What are the differences in estimates?
+
+All coefficients are estimated in the same direction (meaning: positive or negative). 
+
+There is also one variable which is significant in the group means model and not in the pooled model: the variable for marriage. 
+
+### Exercise B.2
+Interpret these differences, why are they there?
+
+With the group means (between) model, we use the mean of all data points for an individual in the model and then look for disturbances to the mean. The group means model estimates the parameter values based on group means of 595 unique units, whereas the pooled model estimates values based on all time points together, for 4165 observations. The group means model flattens observations over time. For example for a married person, if they are married across all 7 time points, they will have a value of 1 in the group means model. If they are married for part of the 7 time points, it will be somewhere between 0 and 1. So we are estimating for marriage something like, the effect of spending a fraction of those seven time points with status of married. 
+
+
+## Exercise E: Fixed effects model
+
+### Exercise E.1
+Least squares dummy variable model
+
+Estimate a fixed effects model with `lwage` as dependent variable, and the regressors as before (where possible). For that purpose use the least squares dummy variable approach. In this model, there is no grand mean but group specific intercepts. We omit the grand mean from the equation by including `-1` in our regression equation formula. Get group specific effects by defining the related group identifiers as factors.
+
+```{r Session5_ExerciseE.1}
+fixed_lsdv <- lm(lwage ~ as.factor(id) + exp + expSq + wks + bluecol + ind + south + smsa + married + union -1, data=DAT) 
+
+summary(fixed_lsdv) 
+
+fixed_lsdv$coefficients[-c(1:595)]
+```
+
+### Exercise E.2
+Estimate a fixed effects model with `lwage`as dependent variable, and the regressors described before (where possible). For that purpose use the partitioned regression approach.
+
+```{r Session5_ExerciseE.2}
+fixed_w <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + union, data=DAT, model="within", index = c("id", "time")) 
+
+summary(fixed_w) 
+```
+
+
+### Exercise E.3
+Conduct a F-test to see whether there are group effects. When using the plm package/function: use the function ‘pFtest’ for that purpose. Otherwise, use the ‘anova’ function.
+
+```{r Session5_ExerciseE.3}
+pooled <- lm(lwage ~ exp + expSq + bluecol + ind + south + smsa + married + sex + union + ed + black, data=DAT)
+
+pFtest(fixed_w, pooled)  # test on common significance of dummies for groups/ individuals
+
+anova(fixed_lsdv, pooled) # using the F test implemented in the anova function
+```
+The probability that both models estimate the same effects is very small. We can see that sing the fixed effects model is the better choice according to the p-value of the F-test. 
+
+## Exercise F: Random effects model
+
+Wages data as previously.
+
+### Exercise F.1
+Estimate a random effects model using the `plm` function with the arguments `model = "random", random.method = "amemiya"` and
+`effect="individual"`.
+
+
+```{r Session5_exerciseF.1}
+random <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black, data = DAT, model = "random", random.method = "amemiya", index = c("id", "time"), effect="individual")
+
+summary(random)
+```
+
+### Exercise F.2
+Estimate a random effects model using an ordinary least squares approach.
+
+
+```{r Session5_exerciseF.2}
+random_ols <- lm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black, data = DAT)
+```
+
+### Exercise F.3
+Estimate panel robust standard errors for the OLS model, using the R function vcovHC
+(as you did already in a previous exercise).
+
+
+```{r Session5_exerciseF.3}
+summary(random_ols, vcov=vcovHC(random_ols, method="arellano", cluster="id")) # get panel robust std. errors
+```
+
+### Exercise F.4
+Compare your results. What do you see? Describe and find an explanation.
+
+Lagrange multiplier test for individual effects
+
+```{r }
+plmtest(random, "individual", type="bp")  
+```
+
+We can see in the random effects model `random` that few of the covariates achieved significance. When we look instead at the OLS model with panel robust standard errors, we see that the covariates did reach significance. 
+
+The risk with modeling the individual-specific constant terms as randomly distributed across cross-sectional units is that we might generate inconsistent estimates, if our assumption that individual effects are strictly uncorrelated with the included variables turns out to be false. 
+
+According to the Lagrange multiplier test for individual effects: $H_0: \sigma^2_u = 0 $ can be rejected, so we should use the random effects model.
+
+
+```{r Session5_exerciseF.4}
+library(lmtest)
+
+coeftest(random_ols, vcovHC(random_ols, method = "arellano"))
+```
+
+## Exercise G: Fixed or random effects model with Hausman test
+
+### Exercise G.1 
+Test whether a fixed effects or a random effects model fits the data better.
+Hint: Use the function phtest of the ‘plm’ package to conduct the Hausman test.
+
+```{r }
+phtest(fixed_w, random) 
+```
+Hausman's specification test is used to test the assumption in the random effects model that individual effects are uncorrelated with other regressors. The null hypothesis is no correlation, that OLS (in LSDV model) and GLS are consistent, but pure OLS is inconsistent. The alternative hypothesis $H_1$ is that OLS in the LSDV model is consistent but GLS is not. 
+
+According to the Hausman test, we should reject $H_0$, meaning that OLS in the LSDV model is likely consistent but GLS is not. We conclude that the fixed effects model is the better choice.
+
+### Exercise G.2
+
+$H_0$ can be rejected according to the Hausman test. This means that the Hausman test indicates differences in the coefficients, and thus according to the decision tree on slide 55, we should use the fixed effects model. 
+
+## Exercise H  Mundlak's approach
+
+Mundlak's approach compromises between fixed and random effects model. 
+
+### Exercise H.1 
+Implement Mundlak’s approach. What do you find? Interpret.
+
+```{r Session5_ExerciseH.1}
+A1 <- aggregate(DAT$exp, by=list(DAT$id), mean)
+A2 <- aggregate(DAT$expSq, by=list(DAT$id), mean)
+A3 <- aggregate(DAT$wks, by=list(DAT$id), mean)
+
+M <- cbind(A1, A2[,2], A3[,2])
+
+colnames(M) <- c("id", "exp_m", "expSq_m", "wks_m")
+
+DAT <- merge(DAT, M, by="id", all.x=TRUE)
+
+random_mun <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black + exp_m + expSq_m + wks_m, 
+                data = DAT, model = "random", random.method = "amemiya", index = c("id", "time"), effect="individual")
+
+summary(random_mun)
+```
+
+Mundlak's approach adds to the model the mean over all time points that I have on the individual. (If something does not change over time then of course Mundlak's approach adds nothing to the model.) We don't add everything as a mean, only include "important" variables according to Bud test.
+
+Comparing to the fixed effects model, we can see that Mundlak's approach obviously has the advantage of including variables that do not change over time in this data set, like gender. The fixed effects are estimated similarly (although not identically) to the fixed effect model. The mean experience is something we need to deal with now as a significant covariate. 
+
+### Exercise H.2
+Conduct the Hausman test also with the Mundlak model. What do you find?
+
+```{r Session5_ExerciseH.2}
+phtest(fixed_w, random_mun) 
+```
+In this case, the $H_0$ cannot be rejected, so we are recommended to use the random effects model with Mundlak's approach to make better use of the data.
+
+### Exercise H.3
+Conduct the test for random (individual) effects using the function ‘plmtest’ using the
+arguments `effect=individual` and `type="bp"`.
+
+```{r Session5_ExerciseH.3}
+plmtest(random_mun, "individual", type="bp")  
+```
+
+Here we reject the null hypothesis of no significant random effects.
+
+### Exercise H.4
+Discuss your findings
+
+We have now determined that we can use Mundlak's approach. We can reestimate the model as follows. 
+
+```{r Session5_ExerciseH.4}
+random_mun_ols <- lm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + sex + union + ed + black + exp_m + expSq_m + wks_m, 
+                 data = DAT)
+
+summary(random_mun_ols, vcov=vcovHC(random_mun_ols, method="arellano", cluster="id")) # get panel robust std. errors
+```
+
+
+We are interested in the effect of years of education on log-wages (the return to education). The estimate in the model summary is 0.0544956. It's positive, and associated with an about 5.45% increase in log-wages per year of education) and it has a nice small significant p-value. 
+
+
+# Session 6: Multiple Imputation
+
+Load packages 
+```{r Session6}
+library(lme4)
+library(mice)
+library(miceadds)
+library(haven)
+library(naniar)
+library(reshape2)
+library(lmerTest)
+library(broom.mixed)
+library(plm)
+```
+
+Read in data.
+
+```{r Session6_Exercises}
+# Set working directory
+setwd("C:/Users/chilgers/OneDrive - DIW Berlin/Documents/02 Projects/BGSS Coursework/Advanced Quantitative Methods")
+
+# Load data
+DAT <- read_dta("./Lecture 10/exMiss_1Level.dta")
+```
+
+## Exercise A: Study missingness pattern
+
+```{r Session6_ExerciseA}
+# Missing data patterns
+missP <- md.pattern(DAT, plot=TRUE)
+
+# Missingness percentage per column
+round(missP[nrow(missP),]/nrow(DAT)*100,2)
+
+# Percentage of completely observed units
+table(complete.cases(DAT))/nrow(DAT)
+
+summary(DAT)
+
+```
+## Exercise B: Visualize missingness
+Visualize the missingness pattern using the following functions of the R package “naniar” (here “DAT” is the whole data set): “vis miss(DAT)” and “gg miss upset(DAT)”
+
+```{r Session6_ExerciseB}
+vis_miss(DAT)
+
+gg_miss_upset(DAT)
+```
+
+Describe and interpret the resulting graphs
+
+In the first graph showing missingness across observations using `vis_miss(DAT)` we can see that the columns `comp` and `eduMother` have the highest concentration of missingness. Variables `mig` and `grade` also have quite a high degree of missingness. Some variables are completely observed, such as `id`, `sex`, `age`, and `GY`. The level of missingness in a few other columns is very low (1% or lower): `cognAb`, and `specialNeeds`. 
+
+The graph gives a lovely overview of missingness concentrations across all observations.
+
+The second graph using `gg_miss_upset(DAT)` shows us the frequency of different missingness patterns. In the top right quadrant, we have the occurrence of different missingness patterns, arranged from most frequent to least frequent. The most frequently occurring missingness pattern is `comp` missing and no other variables missing. The next-most-common is `eduMother` missing, all other variables observed. And so on. In the bottom left quadrant we see the set size, the number of observations missing for each variable across all patterns.
+
+
+## Exercise C: MCAR
+Test whether the missingness pattern indicates MCAR
+
+```{r session6_exerciseC}
+mcar_test(DAT) 
+
+```
+The null hypothesis of MCAR is rejected. Thus we have MAR or MNAR.
+
+## Exercise D :mice
+
+Analysis model: $grade_i = \beta_0 + \beta_1comp_i + \beta_2sex_i + \beta_3eduMother_i + \epsilon_i$
+
+Conduct a complete case analysis.
+
+```{r Exercise D.1}
+cc <- lm(grade ~ comp + sex + eduMother, data=DAT)
+
+summary(cc)
+```
+Impute missing values (using mice’s default settings): `imp <- mice(DAT)`
+
+```{r }
+imp <- mice(DAT)
+```
+
+Explore the produced imputed data sets.
+Have a look at your imputed data sets using the command `imp1<- complete(imp, action=1)`
+
+```{r }
+imp1 <- complete(imp, action=1)
+
+summary(imp1)
+```
+
+Which imputation techniques have been used `imp$method`. Do you think the default settings fit the data?
+
+```{r}
+imp$method
+```
+Predictive mean matching was used as a default across the board. 
+
+Do you think the default settings fit the data?
+
+```{r}
+summary(DAT)
+
+hist(DAT$grade)
+# For a categorical variable like grade, pmm is not a bad idea! I would leave it as such or try linear discriminant analysis
+
+hist(DAT$comp)
+# comp appears to be roughly normally distributed, could try method "norm"
+
+hist(DAT$eduMother)
+# This is a binary variable, we could try logistic regression with method "logreg"
+
+hist(DAT$mig)
+# This is a binary variable, we could try logistic regression with method "logreg"
+
+hist(DAT$specialNeeds)
+# This variable is very infrequently missing, I will leave it as pmm
+
+hist(DAT$cognAb)
+# This variable is also approximately normally distributed, I will try out a normal model 
+```
+
+Try some other reasonable imputation techniques.
+
+```{r }
+meth <- imp$method
+
+meth["comp"] <- "norm"
+meth["eduMother"] <- "logreg"
+meth["mig"] <- "logreg"
+meth["cognAb"] <- "norm"
+
+meth
+
+pred <- imp$predictorMatrix
+
+pred
+
+pred[, "id"] <- 0
+
+imp2 <- mice(DAT, predictorMatrix = pred, method = meth)
+
+DAT <- DAT %>%
+  mutate(mig = as.factor(mig),
+         eduMother = as.factor(eduMother))
+
+imp2 <- mice(DAT, predictorMatrix = pred, method = meth)
+```
+
+Pool the results of all your imputations:
+`fit <- with(data=imp, exp=lm(grade ˜ comp + sex + eduMother))` and `summary(pool(fit))`
+
+```{r }
+fit_imp <- with(data=imp, exp=lm(grade ~ comp + sex + eduMother))
+
+summary(pool(fit_imp))
+
+fit_imp2 <- with(data=imp2, exp=lm(grade ~ comp + sex + eduMother))
+
+summary(pool(fit_imp2))
+
+summary(cc)
+```
+Compare results from the complete case analysis and the MI analyses. Discuss.
+
+The two MI analyses using different predictor matrix and method of univariate imputation produced very similar results for coefficients. The most different coefficient was eduMother, where in the logistic regression imputation it had a value of -0.14, in the pmm imputation it ended up as -0.12. Standard errors were also similar between imputation models. 
+
+The complete case also was very similar. Compared to the MI results, the complete case analysis may have underestimated the intercept by about 0.03. The standard errors in the complete case analysis were all a bit bigger than in the MI results: this means we have more power when we use MI to estimate the coefficients. 
+
+## Exercise E
+
+Have a look at the predictor matrix that mice uses by default. Do you think that it makes
+sense regarding every aspect? 
+
+I accidentally did this already in the previous exercise. Using ID to predict does not make sense and I set it to 0 so that it is no longer used for prediction. This however did not give me very different results than in `imp` with the default settings.
+
+Use `quickpred()` of mice
+
+```{r }
+quickpred(DAT)
+```
+Redo imputation and analysis, considering only values with 40 percent usable cases. Hint: For this use the argument `“minpuc”` in the `“quickpred”` function.
+
+```{r }
+
+imp <- mice(DAT, pred = quickpred(DAT, minpuc = 0.25, exclude="id"))
+
+```
+
+Do you detect multicollinearity hindering feasible imputation? 
+
+```{r}
+imp$loggedEvents
+```
+No, there are no logged events for this imputation. Good!
+
+## Exercise F: Diagnostics
+
+Conduct diagnostics on the imputed data using the functions of the previous slide.
+
+- “bwplot(imp)”: side-by-side box-and-whisker plots for the observed and imputed data
+- “stripplot(imp)”: produces the individual points for numerical variables per imputation
+- “densityplot(imp)”: shows kernel density estimates of the imputed and observed data
+
+```{r Session6_ExerciseF.1}
+stripplot(imp, data= grade ~ eduMother, pch = c(21, 20), cex = c(1, 1.5))
+
+bwplot(imp, data=grade ~ comp)
+
+bwplot(imp)
+
+densityplot(imp, data=grade ~ comp) 
+
+plot(imp)
+
+```
+
+Describe what you find. Assess whether your imputation worked well (or not).
+
+Red shows imputed values and blue shows the observed values. 
+
+Stripplot shows the individual point for numerical values per imputation .We can see that many values of grade equal to 6 (the worst grade in Germany) were imputed, for education level of mother with and without a higher education.
+
+The box and whisker plot shows side-by-side plots for observed and imputed data. These look good for the continuous variables. 
+
+In the density plot we can see that the distributions are quite similar. This is good news, we likely have MAR or MNAR, but we still don't need a dramatically different distribution.
+
+The `plot(imp)` diagnostic plots are looking good, except for `specialNeeds`, however that variable has only 8 missing values and I think this can be safely ignored. 
+
+## Exercise G: Bondarenko and Raghunathan
+
+Data: “nhanes” data (N=25, with age, bmi, hypn (Hypertensive yes/no), chl (Total serum cholesterol (mg/dL)) as variables)
+
+Analysis Model: `bmi ∼ age + hypn + chl`
+
+Redo diagnostic check as proposed by Bondarenko and Raghunathan.
+
+```{r }
+imp <- mice(nhanes, seed=28651)
+
+fit <- with(imp, glm(ici(imp) ~ age + bmi + hyp + chl, family = binomial))
+
+ps <- rep(rowMeans(sapply(fit$analyses, fitted.values)), imp$m + 1)
+
+xyplot(imp, bmi ~ ps | as.factor(.imp),
+       xlab = "Probability that record is incomplete", ylab = "BMI", pch = c(1, 19), col = mdc(1:2))
+```
+
+
+What do you find? Explain. 
+
+We are comparing the distributions of observed and imputed data conditional on the missingness probability. We plot BMI against the propensity score in each data set. According to Flexible Imputation of Missing Data section 6.6: Under MAR the conditional distributions should be similar, if the model we take for imputing fits well. (https://stefvanbuuren.name/fimd/sec-diagnostics.html) The distributions of red and blue points are similar. This is what we would expect under MAR. 
+
+## Exercise H Passive imputation for interaction term
+
+We are back to the German grades example.
+
+Analysis Model: $grade_i = \beta_0 + \beta_1comp_i + \beta_2sex_i + \beta_3eduMother_i + \beta_4sex_i × eduMother_i + \epsilon_i$
+
+Analyse the model using imputed data
+
+```{r }
+DAT_ext <- read_dta("./Lecture 10/exMiss_1Level.dta")
+
+DAT_ext$eduMSex <- DAT_ext$eduMother * DAT_ext$sex
+
+cc_ex3 <- lm(grade ~ comp + sex + eduMother + 
+               eduMSex, data=DAT_ext)
+
+summary(cc_ex3)
+
+meth <- make.method(DAT_ext)
+
+meth["eduMSex"] <- "~I(eduMother * sex)"
+
+pred <- make.predictorMatrix(DAT_ext)
+
+pred[c("eduMother", "sex"), "eduMSex"] <- 0
+
+pred[,"id"] <- 0
+
+imp_pas <- mice(DAT_ext, meth=meth, pred=pred, 
+                print=TRUE, seed=5028)
+
+
+fit_imp_pas <- with(data=imp_pas, exp=lm(grade ~ comp + sex + eduMother + eduMSex))
+
+summary(pool(fit_imp_pas))
+
+```
+
+## Exercise I  Rejection sampling for imputation
+
+```{r Session6_ExerciseI}
+library(smcfcs)
+
+DATs_ext <- as.data.frame(DAT_ext[,-1])
+
+meth <- c("", "", "norm", "logreg", "", "logreg", "logreg", "norm", "", "eduMother*sex")
+
+imps <- smcfcs(originaldata = DATs_ext, meth = meth, smtype = "lm",
+               smformula = "grade ~ comp + sex + eduMother + eduMSex",
+               m=5, rjlimit = 15000, numit = 10)
+
+fit_s <- lapply(imps$impDatasets, lm,
+              formula = grade ~ comp + sex + eduMother + eduMSex)
+
+summary(pool(fit_s))
+summary(pool(fit_imp_pas))
+
+```
+### Exercise I.1 Compare both and discuss
+
+Both passive imputation and rejection sampling generate similar values for the estimates of intercept, comp, and sex. When it comes to eduMother, it is estimated higher in passive imputation, by 0.02, and for eduMSex, the interaction term, it is estimated less extreme than in the rejection sampling method, -0.07 instead of -0.12 in rejection sampling. Rejection sampling is congenial and preserves interactions better, generally, than passive imputation. We can prefer rejection sampling here.
+
+## Exercise J and K
+
+Analysis model: $grade56_i = β_0 + β_1comp_i + β_2sex_i + β_3eduMother_i + ϵ_i$
+
+Analyse that model using imputed data. Impute grade and comp by joint modelling, and also mig and specialNeeds using the block command of the mice function. Specify grade56 ex post.
+
+```{r }
+DAT_b <- read_dta("./Lecture 10/exMiss_1Level.dta")
+
+DAT_b$grade56 <- ifelse(DAT_b$grade %in% NA, NA, 
+                        ifelse(DAT_b$grade %in% c(5,6), 1,0))
+
+table(DAT_b$grade56, exclude=NULL)
+
+cc_ex3 <- glm(grade56 ~ comp + sex + eduMother, family = binomial(link = "logit"), data=DAT_b)
+
+summary(cc_ex3)
+
+imp <- mice(DAT_b, m=1, maxit=1)
+
+meth <- imp$method
+
+meth["eduMother"] <- meth["mig"] <- 
+  meth["specialNeeds"] <- "logreg"
+
+DAT_b$eduMother <- as.factor(DAT_b$eduMother)
+
+DAT_b$mig <- as.factor(DAT_b$eduMother)
+
+DAT_b$specialNeeds <- as.factor(DAT_b$specialNeeds)
+
+meth["grade56"] <- ""
+
+pred <- imp$predictorMatrix
+
+pred[, "id"] <- 0
+
+pred[, "grade56"] <- 0 # not using grade56 for imputing other variables
+
+post <- make.post(DAT_b)
+
+post["grade56"] <- "ifdo(grade %in% c(5,6), grade %in% (1,2,3,4)), c(1,0)"
+
+imp_post <- mice(DAT_b, predictorMatrix = pred, meth=meth, post=post)
+
+imp_post$loggedEvents
+
+imp_post1 <- complete(imp_post, complete=1)
+
+fit_ex4 <- with(data=imp_post, exp=lm(grade56 ~ comp + sex + eduMother))
+
+summary(pool(fit_ex4))
+
+DAT_bl <- DAT[,-1]
+
+DAT_bl$grade56 <- ifelse(DAT$grade %in% NA, NA, ifelse(DAT$grade %in% c(5,6), 1,0))
+
+bl <- list(bl1=c("grade", "comp"), 
+           bl2=c("eduMother"), bl3=c("mig", "specialNeeds"), bl4=c("cognAb"))
+
+imp_block <- mice(DAT_bl, blocks=bl, m=1, maxit = 1)
+
+meth <- imp_block$method
+
+meth["bl2"] <- "logreg"
+
+meth["bl3"] <- "logreg"
+
+DAT_bl$eduMother <- as.factor(DAT_bl$eduMother)
+
+DAT_bl$mig <- as.factor(DAT_bl$mig)
+
+DAT_bl$specialNeeds <- as.factor(DAT_bl$specialNeeds)
+
+pred <- imp_block$predictorMatrix
+
+pred[, "grade56"] <- 0
+
+post <- make.post(DAT_bl)
+
+post["grade56"] <- "ifdo(grade %in% c(5,6), grade %in% (1,2,3,4)), c(1,0)"
+
+imp_block <- mice(DAT_bl, method=meth, blocks=bl, 
+                  post=post, m=10)
+
+fit_ex5 <- with(data=imp_post, exp=lm(grade56 ~ comp + sex + eduMother))
+
+# Compare
+summary(pool(fit_ex4))
+summary(pool(fit_ex5))
+```
+
+Compare with the related analysis without hybrid imputation (same data, some analysis model with a distinct imputation technique), and discuss.
+
+These results are the same as for the previous exercise. (Am I missing something??) This means we could be using the imputation without blocks. 
+
+## L. Imputation of longitudinal data
+
+Check missing data pattern & test for MCAR (Hint: “mcar test” works best with data in long format)
+
+```{r}
+lDAT <- read_dta("./Lecture 10/Wages_with_miss.dta")
+
+mcar_test(lDAT)
+
+```
+
+Reject MCAR.
+
+```{r}
+miss <- md.pattern(lDAT, plot=FALSE)
+
+miss[nrow(miss),]/nrow(lDAT)
+```
+Only ed and lwage have some missing values. 
+
+Convert data to wide format (it is in long format), e.g. using the “reshape2” package:
+
+```{r}
+lDAT$expSq <- lDAT$exp * lDAT$exp
+
+wDAT <- reshape(as.data.frame(lDAT), 
+                v.names=c("lwage", "exp", "expSq", "wks", "bluecol", "ind", "south", "smsa", "married", "union"), 
+                idvar="id",timevar="time",
+                direction="wide")
+
+table(complete.cases(wDAT))/nrow(wDAT)
+
+miss <- md.pattern(wDAT, plot=FALSE)
+
+miss[nrow(miss),]/nrow(wDAT)
+
+```
+
+Impute missing values using mice; for this use proper imputation techniques
+
+```{r }
+
+imp <- mice(wDAT, m=1, maxit=1)
+
+imp$loggedEvents # ok
+
+imp$method # ok
+
+pred <- imp$predictorMatrix
+
+imp_wide <- mice(wDAT, pred=pred, print=FALSE, seed=25641, maxit=10, m=10)
+
+imp_wide$loggedEvents
+```
+
+We see a lot of logged events!
+
+Loop over all imputed data sets (e.g. using a ‘for loop’): (i) transform data to long format; (ii)
+estimate model (using the ‘plm’ function of the plm package), (iii) write estimated model into a list
+(initialized before by e.g. resList <- vector(length=10, mode="list"))
+
+Pool results by Rubin’s combining rules using the command pool(as.mira(resList))
+
+```{r }
+resList <- vector(length=10, mode="list")
+
+for(i in 1:10){
+  #i <- 1
+  dat_i <- complete(imp_wide, action =i)
+  
+  datLong_i <- reshape(dat_i, idvar = "id", varying = c(5:74), direction = "long")
+  
+  resList[[i]] <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + union, 
+                      model="within", index = c("id", "time"), data=datLong_i) 
+  
+}
+
+summary(pool(as.mira(resList)))
+
+```
+
+
+
+```{r }
+cc <- plm(lwage ~ exp + expSq + wks + bluecol + ind + south + smsa + married + union, 
+    model="within", index = c("id", "time"), data=lDAT) 
+
+summary(cc)
+```
+
+Oppose the model on imputed data and a complete cases analysis. What do you see?
+
+
+
+## M. Multilevel imputation
+
+Data on 9th grade school children from Germany (N=10,531); file: “ex3 2Level.dta”
+
+Check missing data pattern.
+
+```{r}
+library(multilevel)
+
+mlDAT <- read_dta("./Lecture 10/exMiss_2Level.dta")
+
+miss <- md.pattern(mlDAT, plot=FALSE)
+
+miss[nrow(miss),]/nrow(mlDAT) # missing proportion >5%: grade, eduMother, comp
+
+```
+
+Check the ICC to decide whether which level-1 variable to impute using a multi-level imputation approach.
+
+```{r }
+
+
+ICC1(aov(age ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(specialNeeds ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(grade ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(mig ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(eduMother ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(comp ~ as.factor(id_teach), data=mlDAT))
+
+ICC1(aov(cognAb ~ as.factor(id_teach), data=mlDAT))
+```
+
+All ICCs higher than 0.15 ICC -> multilevel imputation required
+
+Impute missing values using mice and the appropriate imputation techniques. 
+
+```{r}
+pred <- mice::make.predictorMatrix(data=mlDAT)
+
+meth <- mice::make.method(data=mlDAT)
+
+pred[,"id"] <- 0
+
+pred[,"id_teach"] <- 0
+
+pred[c("age", "specialNeeds", "cognAb", "mig", 
+       "grade", "eduMother", "comp"), "id_teach"]  <- -2
+
+pred["PropGermNatives",] <- 0
+
+pred["PropGermNatives", c("id_teach", "mig")] <- 
+  c(-2,1)
+
+meth["id"] <- ""
+
+meth["grade"] <- "2l.pmm"
+
+meth["comp"] <- "2l.pmm"
+
+meth["eduMother"] <- "2l.bin" 
+
+meth["age"] <- "2l.pmm"
+
+meth["mig"] <- "2l.bin"
+
+meth["specialNeeds"] <- "2l.bin"
+
+meth["cognAb"] <- "2l.pmm"
+
+meth["PropGermNatives"] <- "2lonly.pmm" # this info is categorized, otherwise one could easily derive it
+
+# imp_ml <- mice::mice(mlDAT, m=5,
+#                      predictorMatrix=pred, method=meth, maxit=5, seed=987)
+# 
+# imp_ml$loggedEvents # Alles okay.
+
+# Commenting out because this takes a very long time to run
+
+```
+
+Estimate the analysis model using the imputed data and pool results.
+
+```{r }
+# fit_ml <- with(data=imp_ml, exp=lme4::lmer(grade ~  
+#                                              comp + sex + eduMother + PropGirls + PropGermNatives +                                        (1|id_teach), REML = FALSE))
+# 
+# summary(pool(fit_ml))
+
+```
+
+Conduct complete case analysis and compare the results with the analysis using the imputed data.
+
+```{r }
+
+# cc_ml <- lmer(grade ~  comp + sex + eduMother +
+#                 PropGirls + PropGermNatives + (1|id_teach), data = mlDAT, REML = FALSE)
+# 
+# summary(cc_ml)
+```
+The complete case analysis finds an average German grade of 3.08, and the multilevel MI find 3.22 - this is a pretty big difference! The multilevel MI finds a stronger negative effect of eduMother, -0.14 compared to -0.11 in complete case analysis. Negative in this case indicates a better grade, since in Germany the best grade is 1 and the worst is 6. In the pooled results of the imputed data we see smaller standard errors for the fixed effects.
